@@ -1,24 +1,66 @@
----------------------------------------------------------------------
-|                                               ,        ,          |
-|                                              /(        )`         |
-|     FFFFFFF                                  \ \___   / |         |
-|     FF                                       /- _  `-/  '         |
-|     FF                                      (/\/ \ \   /\         |
-|     FFFFF RR RRR  EEE    EEE                / /   | `    \        |
-|     FF    RRR    E   E  E   E               O O   ) /    |        |
-|     FF    RR     EEEEE  EEEEE               `-^--'`<     '        |
-|     FF    RR     E      E                 (_.)  _  )    /         |
-|     FF    RR      EEEE   EEEE              `.___/`    /           |
-|                                               `-----/             |
-|     BBBBBB    SSSSS   DDDDDD    <----.     __ / __   \            |
-|     BB   BB  SS   SS  DD   DD   <----|====O)))==) \) /=========== |
-|     BB   BB  SS       DD   DD   <----'    `--' `.__,' \           |
-|     BBBBBB    SSSSS   DD   DD                |         |          |
-|     BB   BB       SS  DD   DD                 \       /           |
-|     BB   BB  SS   SS  DD   DD           ______( (_  / \_______    |
-|     BBBBBB    SSSSS   DDDDDD          ,'  ,-----'   |         \   |
-|                                       `--{__________)         \/  |
----------------------------------------------------------------------
-	Welcome to cyberspace.ninja, powered by FreeBSD
-	For assistance contact jabalthi@cyberspace.ninja
----------------------------------------------------------------------
+#!/usr/local/bin/bash
+
+OS=`uname -a | cut -d: -f1 | cut -d\  -f4`
+VERSION=`uname -a | cut -d: -f1 | cut -d\  -f5`
+REL1=`uname -a | cut -d: -f1 | cut -d\  -f6`
+REL2=`uname -a | cut -d: -f1 | cut -d\  -f7`
+RELEASE="$REL1 $REL2"
+
+MINS=`/usr/bin/uptime | awk '{print $5}' | cut -d: -f2 | tr -d ,`
+HRS=`/usr/bin/uptime | awk '{print $5}' | cut -d: -f1`
+DAYS=`/usr/bin/uptime | awk '{print $3}'`
+UPTIME="$DAYS Days, $HRS Hours, and $MINS Minutes"
+
+DATE=`date +"%A, %e %B %Y, %r"`
+
+MEM_AVAIL_KB=`df | grep -E /dev/ | cut -d' ' -f4`
+MEM_AVAIL_GB=`echo "scale=3;$MEM_AVAIL_KB/1000000" | bc`
+MEM_USED_KB=`df | grep -E /dev/ | cut -d' ' -f3`
+MEM_USED_GB=`echo "scale=3;$MEM_USED_KB/1000000" | bc`
+MEM_USED_PERCENT=`df | grep -E /dev/ | awk '{print $5}'`
+
+CPU_TYPE=`dmesg | grep 'CPU:' | cut -d@ -f1 | cut -d' ' -f2 | tr -d '(R)'`
+CPU_MODEL=`dmesg | grep 'CPU:' | cut -d@ -f1 | cut -d' ' -f3 | tr -d '(R)'`
+CPU_STATS=`dmesg | grep 'CPU:' | cut -d@ -f2 | sed 's/^ //'`
+
+IP_ADDR=`wget -q -O - http://icanhazip.com/ | tail`
+IP_IFACE=`netstat -rn | grep default | awk '{print $6}'`
+IP_MAC=`ifconfig $IP_IFACE | grep ether | tr -d '	' | cut -d' ' -f2`
+
+
+printf "\n"
+printf "\033[1;41mPowered by $OS\033[m\n\n"
+printf "\033[4;33m$VERSION $RELEASE \033[m\n\n"
+printf "\033[1;32mNow................:\033[m %s\n" "$DATE"
+printf "\033[1;32mUptime.............:\033[m $UPTIME\n"
+printf "\033[1;32mRunning Processes..:\033[m `/bin/ps ax | /usr/bin/wc -l | /usr/bin/tr -d " "`\n"
+printf "\033[1;32mProcessor..........:\033[m %s %s %s\n" "$CPU_TYPE" "$CPU_MODEL" "$CPU_STATS"
+printf "\033[1;32mPhysical Memory....:\033[m %s GB of %s GB (%s) Used\n" "$MEM_USED_GB" "$MEM_AVAIL_GB" "$MEM_USED_PERCENT"  
+printf "\033[1;32mNetwork............:\033[m IP %s on %s at %s\n" "$IP_ADDR" "$IP_IFACE" "$IP_MAC"
+
+printf "\n";
+printf "\033[1;34m----------------------------------------------------------------------- \033[m\n";
+printf "\033[31;1m                                                 ,        , \033[m\n";
+printf "\033[31;1m                                                /(        )\` \033[m\n";
+printf "\033[1;32m    FFFFFFF \033[31;1m                                    \ \___   / | \033[m\n";
+printf "\033[1;32m    FF \033[31;1m                                         /- _  \`-/  \' \033[m\n";
+printf "\033[1;32m    FF \033[31;1m                                        (/\/ \ \   /\ \033[m\n";
+printf "\033[1;32m    FFFFF RR RRR  EEEEE   EEEEE \033[31;1m               / /   | \`    \ \033[m\n";
+printf "\033[1;32m    FF    RRR    EE   EE EE   EE \033[31;1m              O O   ) /    | \033[m\n";
+printf "\033[1;32m    FF    RR     EEEEEEE EEEEEEE \033[31;1m              \`-^--\'\`<    \' \033[m\n";
+printf "\033[1;32m    FF    RR     EE      EE \033[31;1m                 (_.)  _  )   / \033[m\n";
+printf "\033[1;32m    FF    RR      EEEEEE  EEEEEE \033[31;1m             \`.___/\`   / \033[m\n";
+printf "\033[31;1m                                                \`-----/ \033[m\n";
+printf "\033[1;32m    BBBBBB     SSSSS    DDDDDD \033[31;1m    <----.     __ / __   \ \033[m\n";
+printf "\033[1;32m    BB   BB   SS   SS   DD   DD \033[31;1m   <----|====O)))==) \) /==== \033[m\n";
+printf "\033[1;32m    BB   BB   SS        DD   DD \033[31;1m   <----\'    \`--\' \`.__,\' \ \033[m\n";
+printf "\033[1;32m    BBBBBB     SSSSS    DD   DD \033[31;1m                |        | \033[m\n";
+printf "\033[1;32m    BB   BB        SS   DD   DD \033[31;1m                 \       / \033[m\n";
+printf "\033[1;32m    BB   BB   SS   SS   DD   DD \033[31;1m           ______( (_  / \______ \033[m\n";
+printf "\033[1;32m    BBBBBB     SSSSS    DDDDDD \033[31;1m          ,\'  ,-----\'   |        \ \033[m\n";
+printf "\033[31;1m                                         \`--{__________)        \/ \033[m\n\n";
+printf "\033[1;34m--------------------------------------------------------------------- \033[m\n";
+printf "\033[1;32m     Welcome to cyberspace.ninja, powered by \033[31;1mFreeBSD \033[m\n";
+printf "\033[33;1m     For assistance contact \033[4;36mjabalthi@cyberspace.ninja \033[m\n";
+printf "\033[1;34m--------------------------------------------------------------------- \033[m\n";
+
